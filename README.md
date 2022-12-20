@@ -1,1 +1,2 @@
 # hangman
+This project is a command line based hangman game (http://en.wikipedia.org/wiki/Hangman_(game)) built from scratch by me. The game loads in a 1000 word database and randomly chooses a word (between 5-12 letters long) for the player to guess. The default setting is 12 turns to guess the word (can be changed in game constructor). The game also has save/load functionality (through YAML files), where the player can save their progress and then load and continue the game at a later time!
