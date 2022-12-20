@@ -1,0 +1,12 @@
+---
+:word: transparent
+:min_word_length: 5
+:max_word_length: 12
+:display: t r a _ s _ a r _ _ t
+:previous_guesses:
+- a
+- s
+- t
+- r
+:turns: 5
+:max_turns: 12

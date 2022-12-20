@@ -1,0 +1,13 @@
+---
+:word: national
+:min_word_length: 5
+:max_word_length: 12
+:display: _ a _ _ _ _ a _
+:previous_guesses:
+- a
+- b
+- c
+- e
+- d
+:turns: 6
+:max_turns: 12
