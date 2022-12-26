@@ -1,15 +1,6 @@
 # Class definition for the hangman game
 require 'yaml'
 class Hangman
-  @word = nil
-  @min_word_length = nil
-  @max_word_length = nil
-  @display = nil
-  @guess = nil
-  @previous_guesses = nil
-  @turns = nil
-  @max_turns = nil
-  @save_progress = nil
 
   def initialize()
     @min_word_length = 5
@@ -18,9 +9,7 @@ class Hangman
     @max_turns = 12
     @previous_guesses = []
     @save_progress = false
-    puts
-    puts "Welcome... Prepare yourself for a game of Hangman!"
-    puts
+    puts "\nWelcome... Prepare yourself for a game of Hangman!\n"
   end
 
   # The in-game functionality
@@ -43,21 +32,24 @@ class Hangman
 
   # Prints the rules of hangman
   def print_rules
-    puts 'The rules are as follows...'
-    puts
-    puts "The computer will randomly select a word from the dictionary between #{@min_word_length} and #{@max_word_length} letters long."
-    puts
-    puts "You will have #{@max_turns} turns to guess the word."
-    puts
-    puts 'Good luck!!'
-    puts
+    puts <<~HEREDOC
+
+    The rules are as follows...
+    
+    The computer will randomly select a word from the dictionary between \e[32m#{@min_word_length}\e[0m and \e[32m#{@max_word_length}\e[0m letters long.
+    
+    You will have \e[32m#{@max_turns}\e[0m turns to guess the word.
+    
+    Good luck!!
+    
+    HEREDOC
   end
 
   private
   # Initial prompt to either start a new game or load a previous one
   def new_game?
     begin
-      puts "Would you like to load a previous game? (Y/N)>>"
+      puts "Would you like to load a previous game? \e[32m[Y]/[N]\e[0m>>"
       rgx_inp = /^[YN]{1}$/i
       user_choice = gets.chomp.match(rgx_inp)[0].downcase
     rescue
@@ -74,7 +66,7 @@ class Hangman
 
   # Check if player has won
   def player_victory?
-    @guess == @word || @display.split(' ').join('') == @word
+    @guess == @word || @display == @word
   end
 
   # Check if player has lost
@@ -89,9 +81,9 @@ class Hangman
   # Define end of game scenarios of win/loss
   def game_end
     if player_victory?
-      puts "You won! You guessed the word '#{@word}'!"
+      puts "You won! You guessed the word '\e[32m#{@word}\e[0m'!"
     elsif player_defeat?
-      puts "You lost! You didn't guess the word '#{@word}' in time!"
+      puts "You lost! You didn't guess the word '\e[32m#{@word}\e[0m' in time!"
     elsif save_game?
       puts "See ya next time ;)"
     end
@@ -105,19 +97,16 @@ class Hangman
     word_dict.select! { |word| word.strip.length >= @min_word_length && word.strip.length <= @max_word_length}
 
     @word = word_dict.sample.strip
-    @display = ('_'*@word.length).split('').join(' ')
+    @display = '_'*@word.length
   end
 
   # Player inputs guess for secret @word or saves game
   def player_input
+    current_progress
+    
+    puts "\nPlease enter your letter OR word guess now OR type SAVE to save your progress (turn #\e[32m#{@turns}\e[0m)>>"
+
     begin
-      puts 'Current progress:'
-      puts "#{@display}"
-      puts
-      puts 'Already guessed:'
-      puts "#{@previous_guesses.join(', ')}"
-      puts
-      puts "Please enter your letter OR word guess now OR type SAVE to save your progress (turn ##{@turns})>>"
       rgx_inp = /^[a-zA-Z]{1,#{@max_word_length}}$/
       user_choice = gets.chomp
       if user_choice.match?(/^save$/i)
@@ -131,18 +120,41 @@ class Hangman
     else
       @guess = user_choice.downcase
     end
+    puts
+  end
+
+  # Prints game progress to console
+  def current_progress
+    puts "\nCurrent progress:"
+    puts
+    @display.each_char do |slot|
+          if slot == '_'
+            print "#{slot} "
+          else
+            print "\e[32m#{slot}\e[0m "
+          end
+        end
+    puts
+    puts "\nAlready guessed:\n"
+    @previous_guesses.each do |guess|
+      if @word.include?(guess) 
+        print "\e[32m#{guess}\e[0m, "
+      else
+        print "#{guess}, "
+      end
+    end
   end
 
   # Evaluate @guess for exact, partial, and no matches
   def evaluate_guess
-    new_display = @display.split(' ').join('')
+    new_display = @display
     if @guess.length == 1
       @word.split('').each_with_index do |chr, idx|
         if chr == @guess
           new_display[idx] = chr
         end
       end
-      @display = new_display.split('').join(' ')
+      @display = new_display
     end
     @previous_guesses.push(@guess)
   end
@@ -172,12 +184,13 @@ class Hangman
 
   # List and load saved game files
   def load_game
+    puts
     Dir.glob("saved_games/*.{yaml}").each_with_index do |fname, idx|
       puts "#{idx + 1}. #{fname}"
     end
 
     begin
-      puts "What game would you like to load? >>"
+      puts "\nWhat game would you like to load? >>"
       rgx_inp = /^\d+$/i
       user_choice = gets.chomp.match(rgx_inp)[0].to_i - 1
     rescue

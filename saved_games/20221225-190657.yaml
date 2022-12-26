@@ -1,13 +1,12 @@
 ---
-:word: national
+:word: sources
 :min_word_length: 5
 :max_word_length: 12
-:display: _ a _ _ _ _ a _
+:display: _o___e_
 :previous_guesses:
 - a
-- b
-- c
 - e
-- d
-:turns: 6
+- i
+- o
+:turns: 5
 :max_turns: 12
