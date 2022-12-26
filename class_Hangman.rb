@@ -21,6 +21,7 @@ class Hangman
     end
     
     until game_over?
+      print_current_progress
       player_input
       evaluate_guess
       @turns += 1
@@ -71,9 +72,8 @@ class Hangman
 
   # Player inputs guess for secret @word or saves game
   def player_input
-    current_progress
     
-    puts "\nPlease enter your letter OR word guess now OR type SAVE to save your progress (turn #\e[32m#{@turns}\e[0m)>>"
+    puts "\nPlease enter your letter OR word guess now OR type SAVE to save your progress (turn \e[32m##{@turns}\e[0m)>>"
 
     begin
       rgx_inp = /^[a-zA-Z]{1,#{@max_word_length}}$/
@@ -93,7 +93,7 @@ class Hangman
   end
 
   # Prints game progress to console
-  def current_progress
+  def print_current_progress
     puts "\nCurrent progress:\n\n"
     
     @display.each_char do |slot|
@@ -103,6 +103,7 @@ class Hangman
             print "\e[32m#{slot}\e[0m "
           end
         end
+
     puts "\n\nAlready guessed:\n"
     @previous_guesses.each do |guess|
       if @word.include?(guess) 
