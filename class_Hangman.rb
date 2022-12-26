@@ -33,7 +33,7 @@ class Hangman
   def print_rules
     puts <<~HEREDOC
 
-    Welcome... Prepare yourself for a game of Hangman!"
+    Welcome... Prepare yourself for a game of Hangman!
 
     The rules are as follows...
     
