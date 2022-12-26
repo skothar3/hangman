@@ -9,13 +9,12 @@ class Hangman
     @max_turns = 12
     @previous_guesses = []
     @save_progress = false
-    puts "\nWelcome... Prepare yourself for a game of Hangman!\n"
+    print_rules
   end
 
   # The in-game functionality
   def play_game
     if new_game?
-      print_rules
       computer_select_word
     else
       load_game
@@ -33,6 +32,8 @@ class Hangman
   # Prints the rules of hangman
   def print_rules
     puts <<~HEREDOC
+
+    Welcome... Prepare yourself for a game of Hangman!"
 
     The rules are as follows...
     
@@ -57,38 +58,6 @@ class Hangman
       retry
     end
     user_choice == 'y' ? false : true
-  end
-
-# Check if game has ended
-  def game_over?
-    player_victory? || player_defeat? || save_game?
-  end
-
-  # Check if player has won
-  def player_victory?
-    @guess == @word || @display == @word
-  end
-
-  # Check if player has lost
-  def player_defeat?
-    @turns > @max_turns
-  end
-
-  def save_game?
-    @save_progress == true
-  end
-
-  # Define end of game scenarios of win/loss
-  def game_end
-    if player_victory?
-      puts "You won! You guessed the word '\e[32m#{@word}\e[0m'!"
-    elsif player_defeat?
-      puts "You lost! You didn't guess the word '\e[32m#{@word}\e[0m' in time!"
-    elsif save_game?
-      puts "See ya next time ;)"
-    end
-    @save_progress = false
-    puts
   end
 
   # Computer reads in the dictionary and randomly chooses a word
@@ -125,8 +94,8 @@ class Hangman
 
   # Prints game progress to console
   def current_progress
-    puts "\nCurrent progress:"
-    puts
+    puts "\nCurrent progress:\n\n"
+    
     @display.each_char do |slot|
           if slot == '_'
             print "#{slot} "
@@ -134,8 +103,7 @@ class Hangman
             print "\e[32m#{slot}\e[0m "
           end
         end
-    puts
-    puts "\nAlready guessed:\n"
+    puts "\n\nAlready guessed:\n"
     @previous_guesses.each do |guess|
       if @word.include?(guess) 
         print "\e[32m#{guess}\e[0m, "
@@ -143,6 +111,7 @@ class Hangman
         print "#{guess}, "
       end
     end
+    puts
   end
 
   # Evaluate @guess for exact, partial, and no matches
@@ -157,6 +126,39 @@ class Hangman
       @display = new_display
     end
     @previous_guesses.push(@guess)
+  end
+
+  # Check if game has ended
+  def game_over?
+    player_victory? || player_defeat? || save_game?
+  end
+
+  # Check if player has won
+  def player_victory?
+    @guess == @word || @display == @word
+  end
+
+  # Check if player has lost
+  def player_defeat?
+    @turns > @max_turns
+  end
+
+  # Check to save game
+  def save_game?
+    @save_progress == true
+  end
+
+  # Define end of game scenarios of win/loss
+  def game_end
+    if player_victory?
+      puts "You won! You guessed the word '\e[32m#{@word}\e[0m'!"
+    elsif player_defeat?
+      puts "You lost! You didn't guess the word '\e[32m#{@word}\e[0m' in time!"
+    elsif save_game?
+      puts "See ya next time ;)"
+      @save_progress = false
+    end
+    puts
   end
 
   # Save yaml file of current progress
@@ -197,7 +199,12 @@ class Hangman
       puts 'Invalid input! Try again...'
       retry
     end
+    
+    load_file(user_choice)
+  end
 
+  # Load the selected yaml file
+  def load_file(user_choice)
     loaded_yaml = File.read(Dir.glob("saved_games/*.{yaml}")[user_choice])
 
     loaded_data = YAML.load(loaded_yaml)
@@ -210,4 +217,5 @@ class Hangman
     @turns = loaded_data[:turns]
     @max_turns = loaded_data[:max_turns]
   end
+
 end
