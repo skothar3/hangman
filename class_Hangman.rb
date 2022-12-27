@@ -9,11 +9,11 @@ class Hangman
     @max_turns = 12
     @previous_guesses = []
     @save_progress = false
-    print_rules
   end
 
   # The in-game functionality
   def play_game
+    print_rules
     if new_game?
       computer_select_word
     else
